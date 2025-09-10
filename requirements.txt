@@ -1,0 +1,9 @@
+# Core
+langchain>=0.1
+langchain-community
+chromadb
+pypdf
+sentence-transformers
+ollama            # python client for ollama: pip install ollama
+python-dotenv
+requests
