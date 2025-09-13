@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Tutor Interaction Analytics - StudySync Analytics</title>
+    <link rel="stylesheet" href="../css/main.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+<script type="module" src="https://static.rocket.new/rocket-web.js?_cfg=https%3A%2F%2Fstudysync1930back.builtwithrocket.new&_be=https%3A%2F%2Fapplication.rocket.new&_v=0.1.8"></script>
+</head>
+<body class="bg-study min-h-screen">
+    <!-- Navigation Header -->
+    <nav class="bg-white shadow-study border-b border-study">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <svg class="w-8 h-8 text-primary mr-3" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                    </svg>
+                    <h1 class="text-xl font-heading font-semibold text-study-primary">StudySync Analytics</h1>
+                </div>
+                
+                <!-- Navigation Links -->
+                <div class="hidden md:flex space-x-8">
+                    <a href="student_performance_overview_dashboard.html" class="text-study-secondary hover:text-primary transition-colors">Performance Overview</a>
+                    <a href="study_analytics_and_behavior_dashboard.html" class="text-study-secondary hover:text-primary transition-colors">Study Analytics</a>
+                    <a href="ai_tutor_interaction_analytics_dashboard.html" class="text-primary font-medium border-b-2 border-primary pb-1">AI Tutor Analytics</a>
+                    <a href="educator_performance_monitoring_dashboard.html" class="text-study-secondary hover:text-primary transition-colors">Educator Dashboard</a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button class="md:hidden p-2 rounded-md text-study-secondary hover:text-primary">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Dashboard Container -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Global Controls -->
+        <div class="mb-8 bg-white rounded-lg shadow-study p-6">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <!-- Conversation Type Filter -->
+                    <div class="flex items-center gap-2">
+                        <label class="text-sm font-medium text-study-secondary">Conversation Type:</label>
+                        <select class="px-3 py-2 border border-study rounded-lg focus:ring-2 focus:ring-primary-300 focus:border-primary">
+                            <option>All Types</option>
+                            <option>Question & Answer</option>
+                            <option>Explanation Request</option>
+                            <option>Problem Solving</option>
+                            <option>Concept Clarification</option>
+                            <option>Study Planning</option>
+                        </select>
+                    </div>
+                    
+                    <!-- AI Confidence Threshold -->
+                    <div class="flex items-center gap-2">
+                        <label class="text-sm font-medium text-study-secondary">AI Confidence:</label>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs text-study-secondary">Low</span>
+                            <input type="range" min="0" max="100" value="75" class="w-20 h-2 bg-secondary-200 rounded-lg appearance-none cursor-pointer" />
+                            <span class="text-xs text-study-secondary">High</span>
+                            <span class="text-sm font-medium text-primary">75%</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Knowledge Domain Selector -->
+                    <div class="flex items-center gap-2">
+                        <label class="text-sm font-medium text-study-secondary">Domain:</label>
+                        <select class="px-3 py-2 border border-study rounded-lg focus:ring-2 focus:ring-primary-300 focus:border-primary">
+                            <option>All Domains</option>
+                            <option>Mathematics</option>
+                            <option>Physics</option>
+                            <option>Chemistry</option>
+                            <option>Biology</option>
+                            <option>General Study Skills</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Time Range & Export -->
+                <div class="flex items-center gap-4">
+                    <div class="flex bg-secondary-100 rounded-lg p-1">
+                        <button class="px-3 py-1 text-sm rounded-md bg-primary text-white">Today</button>
+                        <button class="px-3 py-1 text-sm rounded-md text-study-secondary hover:bg-white">7 Days</button>
+                        <button class="px-3 py-1 text-sm rounded-md text-study-secondary hover:bg-white">30 Days</button>
+                    </div>
+                    <button class="btn-secondary flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                        </svg>
+                        Export Report
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Metrics Row -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Total Questions Asked -->
+            <div class="card p-6 ambient-glow">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <p class="text-sm text-study-secondary">Questions Asked</p>
+                        <p class="text-2xl font-heading font-semibold text-study-primary">1,247</p>
+                    </div>
+                    <div class="relative w-12 h-12">
+                        <svg class="w-12 h-12 transform -rotate-90" viewBox="0 0 36 36">
+                            <path class="text-secondary-200" stroke="currentColor" stroke-width="3" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                            <path class="text-primary" stroke="currentColor" stroke-width="3" fill="none" stroke-dasharray="92, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                        </svg>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <svg class="w-6 h-6 text-primary" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-1">
+                    <svg class="w-4 h-4 text-success" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                    </svg>
+                    <span class="text-sm text-success">+18% from yesterday</span>
+                </div>
+            </div>
+
+            <!-- AI Accuracy Rate -->
+            <div class="card p-6 ambient-glow">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <p class="text-sm text-study-secondary">AI Accuracy Rate</p>
+                        <p class="text-2xl font-heading font-semibold text-study-primary">94.2%</p>
+                    </div>
+                    <div class="relative w-12 h-12">
+                        <svg class="w-12 h-12 transform -rotate-90" viewBox="0 0 36 36">
+                            <path class="text-secondary-200" stroke="currentColor" stroke-width="3" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                            <path class="text-success" stroke="currentColor" stroke-width="3" fill="none" stroke-dasharray="94.2, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                        </svg>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <svg class="w-6 h-6 text-success" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-1">
+                    <svg class="w-4 h-4 text-success" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                    </svg>
+                    <span class="text-sm text-success">+1.2% improvement</span>
+                </div>
+            </div>
+
+            <!-- Knowledge Gaps Identified -->
+            <div class="card p-6 ambient-glow">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <p class="text-sm text-study-secondary">Gaps Identified</p>
+                        <p class="text-2xl font-heading font-semibold text-study-primary">23</p>
+                    </div>
+                    <div class="relative w-12 h-12">
+                        <svg class="w-12 h-12 transform -rotate-90" viewBox="0 0 36 36">
+                            <path class="text-secondary-200" stroke="currentColor" stroke-width="3" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                            <path class="text-warning" stroke="currentColor" stroke-width="3" fill="none" stroke-dasharray="65, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                        </svg>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <svg class="w-6 h-6 text-warning" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-1">
+                    <svg class="w-4 h-4 text-error" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M14.707 10.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 12.586V5a1 1 0 012 0v7.586l2.293-2.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                    </svg>
+                    <span class="text-sm text-error">-3 from yesterday</span>
+                </div>
+            </div>
+
+            <!-- Recommendation Follow-through -->
+            <div class="card p-6 ambient-glow">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <p class="text-sm text-study-secondary">Follow-through</p>
+                        <p class="text-2xl font-heading font-semibold text-study-primary">78.5%</p>
+                    </div>
+                    <div class="relative w-12 h-12">
+                        <svg class="w-12 h-12 transform -rotate-90" viewBox="0 0 36 36">
+                            <path class="text-secondary-200" stroke="currentColor" stroke-width="3" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                            <path class="text-accent" stroke="currentColor" stroke-width="3" fill="none" stroke-dasharray="78.5, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                        </svg>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <svg class="w-6 h-6 text-accent" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-1">
+                    <svg class="w-4 h-4 text-success" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                    </svg>
+                    <span class="text-sm text-success">+5.2% this week</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <!-- Conversation Flow Visualization -->
+            <div class="lg:col-span-8">
+                <div class="card p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-lg font-heading font-semibold text-study-primary">Conversation Flow Analysis</h2>
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm text-study-secondary">Live Updates:</span>
+                            <div class="flex items-center gap-1">
+                                <div class="w-2 h-2 bg-success rounded-full animate-pulse"></div>
+                                <span class="text-xs text-success">Active</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Interactive Flow Diagram -->
+                    <div class="relative h-96 bg-secondary-50 rounded-lg overflow-hidden">
+                        <svg id="conversationFlow" class="w-full h-full"/>
+                        
+                        <!-- Flow Legend -->
+                        <div class="absolute top-4 right-4 bg-white rounded-lg shadow-study p-3">
+                            <h4 class="text-sm font-medium text-study-primary mb-2">Question Types</h4>
+                            <div class="space-y-1">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-3 h-3 bg-primary rounded-full"></div>
+                                    <span class="text-xs text-study-secondary">Conceptual</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-3 h-3 bg-success rounded-full"></div>
+                                    <span class="text-xs text-study-secondary">Problem Solving</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-3 h-3 bg-warning rounded-full"></div>
+                                    <span class="text-xs text-study-secondary">Clarification</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-3 h-3 bg-accent rounded-full"></div>
+                                    <span class="text-xs text-study-secondary">Study Planning</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Flow Statistics -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-6 border-t border-study">
+                        <div class="text-center">
+                            <p class="text-2xl font-heading font-semibold text-primary">342</p>
+                            <p class="text-sm text-study-secondary">Conceptual Questions</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-2xl font-heading font-semibold text-success">289</p>
+                            <p class="text-sm text-study-secondary">Problem Solving</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-2xl font-heading font-semibold text-warning">156</p>
+                            <p class="text-sm text-study-secondary">Clarifications</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-2xl font-heading font-semibold text-accent">98</p>
+                            <p class="text-sm text-study-secondary">Study Planning</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Real-time Question Feed -->
+            <div class="lg:col-span-4">
+                <div class="card p-6">
+                    <div class="flex items-center gap-2 mb-6">
+                        <svg class="w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 13V5a2 2 0 00-2-2H4a2 2 0 00-2 2v8a2 2 0 002 2h3l3 3 3-3h3a2 2 0 002-2zM5 7a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1zm1 3a1 1 0 100 2h3a1 1 0 100-2H6z" clip-rule="evenodd"/>
+                        </svg>
+                        <h3 class="text-lg font-heading font-semibold text-study-primary">Live Question Feed</h3>
+                    </div>
+                    
+                    <!-- Question Feed Items -->
+                    <div class="space-y-4 max-h-80 overflow-y-auto">
+                        <!-- Recent Question 1 -->
+                        <div class="p-4 bg-primary-50 rounded-lg border border-primary-200">
+                            <div class="flex items-start justify-between mb-2">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-2 h-2 bg-primary rounded-full"></div>
+                                    <span class="text-xs text-primary-700 font-medium">Mathematics</span>
+                                </div>
+                                <span class="text-xs text-study-secondary">2 min ago</span>
+                            </div>
+                            <p class="text-sm text-study-primary mb-2">"How do I solve quadratic equations using the quadratic formula?"</p>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs bg-success-100 text-success-700 px-2 py-1 rounded-full">Positive</span>
+                                    <span class="text-xs text-study-secondary">Difficulty: Medium</span>
+                                </div>
+                                <div class="flex items-center gap-1">
+                                    <svg class="w-4 h-4 text-success" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    <span class="text-xs text-success">96%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recent Question 2 -->
+                        <div class="p-4 bg-warning-50 rounded-lg border border-warning-200">
+                            <div class="flex items-start justify-between mb-2">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-2 h-2 bg-warning rounded-full"></div>
+                                    <span class="text-xs text-warning-700 font-medium">Chemistry</span>
+                                </div>
+                                <span class="text-xs text-study-secondary">5 min ago</span>
+                            </div>
+                            <p class="text-sm text-study-primary mb-2">"I'm confused about electron configuration. Can you explain?"</p>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs bg-warning-100 text-warning-700 px-2 py-1 rounded-full">Neutral</span>
+                                    <span class="text-xs text-study-secondary">Difficulty: Hard</span>
+                                </div>
+                                <div class="flex items-center gap-1">
+                                    <svg class="w-4 h-4 text-warning" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                    </svg>
+                                    <span class="text-xs text-warning">82%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recent Question 3 -->
+                        <div class="p-4 bg-success-50 rounded-lg border border-success-200">
+                            <div class="flex items-start justify-between mb-2">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-2 h-2 bg-success rounded-full"></div>
+                                    <span class="text-xs text-success-700 font-medium">Physics</span>
+                                </div>
+                                <span class="text-xs text-study-secondary">8 min ago</span>
+                            </div>
+                            <p class="text-sm text-study-primary mb-2">"What's the relationship between force and acceleration?"</p>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs bg-success-100 text-success-700 px-2 py-1 rounded-full">Positive</span>
+                                    <span class="text-xs text-study-secondary">Difficulty: Easy</span>
+                                </div>
+                                <div class="flex items-center gap-1">
+                                    <svg class="w-4 h-4 text-success" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    <span class="text-xs text-success">98%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recent Question 4 -->
+                        <div class="p-4 bg-accent-50 rounded-lg border border-accent-200">
+                            <div class="flex items-start justify-between mb-2">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-2 h-2 bg-accent rounded-full"></div>
+                                    <span class="text-xs text-accent-700 font-medium">Biology</span>
+                                </div>
+                                <span class="text-xs text-study-secondary">12 min ago</span>
+                            </div>
+                            <p class="text-sm text-study-primary mb-2">"Can you help me create a study schedule for cell biology?"</p>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs bg-accent-100 text-accent-700 px-2 py-1 rounded-full">Positive</span>
+                                    <span class="text-xs text-study-secondary">Difficulty: Medium</span>
+                                </div>
+                                <div class="flex items-center gap-1">
+                                    <svg class="w-4 h-4 text-accent" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    <span class="text-xs text-accent">91%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Feed Controls -->
+                    <div class="mt-4 pt-4 border-t border-study">
+                        <div class="flex items-center justify-between">
+                            <button class="text-sm text-primary hover:text-primary-600 font-medium">View All Conversations</button>
+                            <div class="flex items-center gap-2">
+                                <button class="p-2 rounded-md hover:bg-secondary-100 transition-colors">
+                                    <svg class="w-4 h-4 text-study-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                                    </svg>
+                                </button>
+                                <button class="p-2 rounded-md hover:bg-secondary-100 transition-colors">
+                                    <svg class="w-4 h-4 text-study-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comprehensive Analytics Grid -->
+        <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Topic-wise Question Frequency -->
+            <div class="card p-6">
+                <h3 class="text-lg font-heading font-semibold text-study-primary mb-6">Topic Question Frequency</h3>
+                <div class="relative h-64">
+                    <canvas id="topicBubbleChart" class="w-full h-full"></canvas>
+                </div>
+                <div class="mt-4 grid grid-cols-2 gap-4 text-center">
+                    <div>
+                        <p class="text-lg font-heading font-semibold text-primary">Calculus</p>
+                        <p class="text-sm text-study-secondary">Most Asked (23%)</p>
+                    </div>
+                    <div>
+                        <p class="text-lg font-heading font-semibold text-success">Mechanics</p>
+                        <p class="text-sm text-study-secondary">Highest Accuracy (97%)</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Response Time Distribution -->
+            <div class="card p-6">
+                <h3 class="text-lg font-heading font-semibold text-study-primary mb-6">Response Time Analysis</h3>
+                <div class="relative h-64">
+                    <canvas id="responseTimeChart" class="w-full h-full"></canvas>
+                </div>
+                <div class="mt-4 grid grid-cols-3 gap-4 text-center">
+                    <div>
+                        <p class="text-lg font-heading font-semibold text-success">1.2s</p>
+                        <p class="text-sm text-study-secondary">Avg Response</p>
+                    </div>
+                    <div>
+                        <p class="text-lg font-heading font-semibold text-warning">0.8s</p>
+                        <p class="text-sm text-study-secondary">Fastest</p>
+                    </div>
+                    <div>
+                        <p class="text-lg font-heading font-semibold text-error">3.1s</p>
+                        <p class="text-sm text-study-secondary">Slowest</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Model Performance Comparison -->
+        <div class="mt-8">
+            <div class="card p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-lg font-heading font-semibold text-study-primary">AI Model Performance Comparison</h2>
+                    <button class="btn-secondary flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
+                        Compare Models
+                    </button>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Current Model -->
+                    <div class="p-4 bg-primary-50 rounded-lg border border-primary-200">
+                        <div class="flex items-center gap-2 mb-3">
+                            <div class="w-3 h-3 bg-primary rounded-full"></div>
+                            <h4 class="font-medium text-primary-700">StudySync AI v3.2</h4>
+                            <span class="text-xs bg-primary-100 text-primary-700 px-2 py-1 rounded-full">Current</span>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="flex justify-between">
+                                <span class="text-sm text-study-secondary">Accuracy</span>
+                                <span class="text-sm font-medium text-study-primary">94.2%</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-sm text-study-secondary">Avg Response</span>
+                                <span class="text-sm font-medium text-study-primary">1.2s</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-sm text-study-secondary">Satisfaction</span>
+                                <span class="text-sm font-medium text-study-primary">4.7/5</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Previous Model -->
+                    <div class="p-4 bg-secondary-50 rounded-lg border border-secondary-200">
+                        <div class="flex items-center gap-2 mb-3">
+                            <div class="w-3 h-3 bg-secondary rounded-full"></div>
+                            <h4 class="font-medium text-secondary-700">StudySync AI v3.1</h4>
+                            <span class="text-xs bg-secondary-100 text-secondary-700 px-2 py-1 rounded-full">Previous</span>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="flex justify-between">
+                                <span class="text-sm text-study-secondary">Accuracy</span>
+                                <span class="text-sm font-medium text-study-primary">91.8%</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-sm text-study-secondary">Avg Response</span>
+                                <span class="text-sm font-medium text-study-primary">1.5s</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-sm text-study-secondary">Satisfaction</span>
+                                <span class="text-sm font-medium text-study-primary">4.4/5</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Beta Model -->
+                    <div class="p-4 bg-accent-50 rounded-lg border border-accent-200">
+                        <div class="flex items-center gap-2 mb-3">
+                            <div class="w-3 h-3 bg-accent rounded-full"></div>
+                            <h4 class="font-medium text-accent-700">StudySync AI v4.0</h4>
+                            <span class="text-xs bg-accent-100 text-accent-700 px-2 py-1 rounded-full">Beta</span>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="flex justify-between">
+                                <span class="text-sm text-study-secondary">Accuracy</span>
+                                <span class="text-sm font-medium text-study-primary">96.1%</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-sm text-study-secondary">Avg Response</span>
+                                <span class="text-sm font-medium text-study-primary">0.9s</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-sm text-study-secondary">Satisfaction</span>
+                                <span class="text-sm font-medium text-study-primary">4.9/5</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-study mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="text-center text-sm text-study-secondary">
+                <p>© 2025 StudySync Analytics. All Rights Reserved.</p>
+                <p class="mt-1">Last updated: September 13, 2025 at 4:09 PM</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        // Topic Bubble Chart
+        const topicCtx = document.getElementById('topicBubbleChart').getContext('2d');
+        const topicBubbleChart = new Chart(topicCtx, {
+            type: 'bubble',
+            data: {
+                datasets: [{
+                    label: 'Mathematics',
+                    data: [{x: 23, y: 89, r: 15}],
+                    backgroundColor: 'rgba(74, 144, 226, 0.6)',
+                    borderColor: '#4A90E2'
+                }, {
+                    label: 'Physics',
+                    data: [{x: 18, y: 94, r: 12}],
+                    backgroundColor: 'rgba(76, 175, 80, 0.6)',
+                    borderColor: '#4CAF50'
+                }, {
+                    label: 'Chemistry',
+                    data: [{x: 15, y: 82, r: 10}],
+                    backgroundColor: 'rgba(255, 152, 0, 0.6)',
+                    borderColor: '#FF9800'
+                }, {
+                    label: 'Biology',
+                    data: [{x: 12, y: 91, r: 8}],
+                    backgroundColor: 'rgba(123, 104, 238, 0.6)',
+                    borderColor: '#7B68EE'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Question Frequency (%)'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'AI Accuracy (%)'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + context.parsed.x + '% frequency, ' + context.parsed.y + '% accuracy';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Response Time Chart
+        const responseCtx = document.getElementById('responseTimeChart').getContext('2d');
+        const responseTimeChart = new Chart(responseCtx, {
+            type: 'bar',
+            data: {
+                labels: ['<1s', '1-2s', '2-3s', '3-4s', '4-5s', '>5s'],
+                datasets: [{
+                    label: 'Response Count',
+                    data: [342, 456, 234, 123, 67, 25],
+                    backgroundColor: [
+                        'rgba(76, 175, 80, 0.8)',
+                        'rgba(74, 144, 226, 0.8)',
+                        'rgba(255, 152, 0, 0.8)',
+                        'rgba(123, 104, 238, 0.8)',
+                        'rgba(229, 62, 62, 0.8)',
+                        'rgba(108, 123, 127, 0.8)'
+                    ],
+                    borderColor: [
+                        '#4CAF50',
+                        '#4A90E2',
+                        '#FF9800',
+                        '#7B68EE',
+                        '#E53E3E',
+                        '#6C7B7F'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Number of Responses'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Response Time Range'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Conversation Flow Visualization using D3.js
+        const svg = d3.select("#conversationFlow");
+        const width = svg.node().getBoundingClientRect().width;
+        const height = svg.node().getBoundingClientRect().height;
+
+        // Sample flow data
+        const flowData = {
+            nodes: [
+                {id: "start", x: 50, y: height/2, type: "start", label: "Student Question"},
+                {id: "analysis", x: 200, y: height/2, type: "process", label: "AI Analysis"},
+                {id: "response", x: 350, y: height/2, type: "process", label: "Generate Response"},
+                {id: "feedback", x: 500, y: height/2, type: "end", label: "Student Feedback"}
+            ],
+            links: [
+                {source: "start", target: "analysis"},
+                {source: "analysis", target: "response"},
+                {source: "response", target: "feedback"}
+            ]
+        };
+
+        // Draw links
+        svg.selectAll(".link")
+            .data(flowData.links)
+            .enter()
+            .append("line")
+            .attr("class", "link")
+            .attr("x1", d => flowData.nodes.find(n => n.id === d.source).x)
+            .attr("y1", d => flowData.nodes.find(n => n.id === d.source).y)
+            .attr("x2", d => flowData.nodes.find(n => n.id === d.target).x)
+            .attr("y2", d => flowData.nodes.find(n => n.id === d.target).y)
+            .attr("stroke", "#4A90E2")
+            .attr("stroke-width", 2)
+            .attr("marker-end", "url(#arrowhead)");
+
+        // Define arrow marker
+        svg.append("defs").append("marker")
+            .attr("id", "arrowhead")
+            .attr("viewBox", "0 -5 10 10")
+            .attr("refX", 8)
+            .attr("refY", 0)
+            .attr("markerWidth", 6)
+            .attr("markerHeight", 6)
+            .attr("orient", "auto")
+            .append("path")
+            .attr("d", "M0,-5L10,0L0,5")
+            .attr("fill", "#4A90E2");
+
+        // Draw nodes
+        const nodes = svg.selectAll(".node")
+            .data(flowData.nodes)
+            .enter()
+            .append("g")
+            .attr("class", "node")
+            .attr("transform", d => `translate(${d.x},${d.y})`);
+
+        nodes.append("circle")
+            .attr("r", 20)
+            .attr("fill", d => {
+                switch(d.type) {
+                    case "start": return "#4CAF50";
+                    case "process": return "#4A90E2";
+                    case "end": return "#7B68EE";
+                    default: return "#6C7B7F";
+                }
+            })
+            .attr("stroke", "#fff")
+            .attr("stroke-width", 2);
+
+        nodes.append("text")
+            .attr("dy", 35)
+            .attr("text-anchor", "middle")
+            .attr("font-size", "12px")
+            .attr("fill", "#2C3E50")
+            .text(d => d.label);
+
+        // Mobile menu toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuButton = document.querySelector('.md\\:hidden button');
+            const navigationLinks = document.querySelector('.hidden.md\\:flex');
+            
+            if (mobileMenuButton && navigationLinks) {
+                mobileMenuButton.addEventListener('click', function() {
+                    navigationLinks.classList.toggle('hidden');
+                    navigationLinks.classList.toggle('flex');
+                    navigationLinks.classList.toggle('flex-col');
+                    navigationLinks.classList.toggle('absolute');
+                    navigationLinks.classList.toggle('top-16');
+                    navigationLinks.classList.toggle('left-0');
+                    navigationLinks.classList.toggle('right-0');
+                    navigationLinks.classList.toggle('bg-white');
+                    navigationLinks.classList.toggle('shadow-lg');
+                    navigationLinks.classList.toggle('p-4');
+                    navigationLinks.classList.toggle('space-x-0');
+                    navigationLinks.classList.toggle('space-y-2');
+                });
+            }
+        });
+
+        // Simulate real-time updates
+        setInterval(function() {
+            const liveIndicator = document.querySelector('.animate-pulse');
+            if (liveIndicator) {
+                liveIndicator.style.opacity = liveIndicator.style.opacity === '0.5' ? '1' : '0.5';
+            }
+        }, 2000);
+
+        // AI Confidence Slider
+        const confidenceSlider = document.querySelector('input[type="range"]');
+        const confidenceValue = document.querySelector('.text-primary');
+        
+        if (confidenceSlider && confidenceValue) {
+            confidenceSlider.addEventListener('input', function() {
+                confidenceValue.textContent = this.value + '%';
+            });
+        }
+    </script>
+</body>
+</html>
