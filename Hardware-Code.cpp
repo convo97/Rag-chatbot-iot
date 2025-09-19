@@ -7,7 +7,7 @@ const char* ssid     = "COE_FLEX_2";
 const char* password = "coeflex@123";
 
 // ====== Your API endpoint ======
-const char* serverName = "https://your-railway-api-url.com/data";  // <-- replace with your API URL
+const char* serverName = "https://iot-api-production-cc46.up.railway.app/api/data";  // <-- replace with your API URL
 
 // ====== Soil moisture pin ======
 #define SOIL_MOISTURE_PIN 34
